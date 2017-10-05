@@ -1,4 +1,10 @@
 #include <iostream>
+#include <stdio.h>
+#include <stdlib.h>   
+#include <curses.h>
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
 using namespace std;
 
 // Global variables
@@ -31,7 +37,13 @@ void Draw() {
 			if (j == 0) {
 				cout << "#";
 			}
-			cout << " ";
+			if (i == y && j == x) {
+				cout << "O";
+			} else if (i == fruitY && j == fruitX) {
+				cout << "F";
+			} else {
+				cout << " ";
+			}
 			if (j == width - 1) {
 				cout << "#";
 			}
@@ -43,14 +55,84 @@ void Draw() {
 		cout << "#";
 	}
 	cout << endl;
+	cout << "Score: " << score << endl;
+}
+
+
+ 
+int kbhit(void) {
+  struct termios oldt, newt;
+  int ch;
+  int oldf;
+ 
+  tcgetattr(STDIN_FILENO, &oldt);
+  newt = oldt;
+  newt.c_lflag &= ~(ICANON | ECHO);
+  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+  oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+  fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+ 
+  ch = getchar();
+ 
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+  fcntl(STDIN_FILENO, F_SETFL, oldf);
+ 
+  if(ch != EOF)
+  {
+    ungetc(ch, stdin);
+    return 1;
+  }
+ 
+  return 0;
 }
 
 void Input() {
-
+	if (kbhit()) {
+		switch(getchar()) {
+			case 'a' :
+				dir = LEFT;
+				break;
+			case 'd' :
+				dir = RIGHT;
+				break;
+			case 'w' :
+				dir = UP;
+				break;
+			case 's' :
+				dir = DOWN;
+				break;
+			case 'x' :
+			gameOver = true;
+			break;
+		}
+	}
 }
 
 void Logic() {
-
+	switch (dir) {
+		case LEFT :
+			x--;
+			break;
+		case RIGHT :
+			x++;
+			break;
+		case UP :
+			y--;
+			break;
+		case DOWN :
+			y++;
+			break;
+		default :
+			break;
+	}
+	if (x > width || x < 0 || y > height || y < 0) {
+		gameOver = true;
+	}
+	if (x == fruitX && y == fruitY) {
+		score += 10;
+		fruitX = rand() % width;
+		fruitY = rand() % height;
+	}
 }
 
 int main() {
@@ -59,6 +141,7 @@ int main() {
 		Draw();
 		Input();
 		Logic();
+		usleep(80000);
 	} 
 	return 0;
 }
