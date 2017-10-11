@@ -4,7 +4,7 @@
 #include <curses.h>
 #include <termios.h>
 #include <unistd.h>
-#include <fcntl.h>
+#include <fcntl.h>§
 #include <thread>
 using namespace std;
 
@@ -148,9 +148,8 @@ void Logic() {
 		default :
 			break;
 	}
-	if (x > width || x < 0 || y > height || y < 0) {
-		gameOver = true;
-	}
+	if (x >= width) x = 0; else if (x < 0) x = width - 1;
+	if (y >= height) y = 0; else if (y < 0) y = height - 1;
 	for (int i = 0; i < nTail; i++) {
 		if (tailX[i] == x && tailY[i] == y) {
 			gameOver = true;
@@ -174,6 +173,7 @@ int controlls() {
 int main() {
 	std::thread parallelThread(controlls);
 	parallelThread.detach();
+
 	Setup();
 	while (!gameOver) {
 		Draw();
