@@ -1,5 +1,5 @@
-# low_level_snake
-Snake written in C++
+# Snake in C++!
+Simple as that. Did it for the purpose of practicing the programming language.
 
-
-![Alt Text](https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif)
+Gameplay:
+![Alt Text](https://media.giphy.com/media/l378t4boYkZi8JrTG/giphy.gif)
